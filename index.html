@@ -659,6 +659,7 @@
     }
 
     const player = makeCharacter();
+    player.visible = false; // Never flash the temporary gameplay model on the title screen.
     scene.add(player);
 
     // Real menu portrait model. Keep the gameplay character separate.
@@ -680,7 +681,7 @@
         const bounds = new THREE.Box3().setFromObject(model);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
-        const targetHeight = 3.4;
+        const targetHeight = 2.25;
         model.scale.setScalar(targetHeight / Math.max(size.y, 0.001));
         model.position.set(
           -center.x * model.scale.x,
@@ -696,7 +697,6 @@
         menuNinja.add(model);
         menuNinja.position.set(-2.0, 0, 0);
         menuNinja.visible = !window.gameStarted;
-        player.visible = false;
       },
       undefined,
       error => {
@@ -874,13 +874,10 @@
         environmentGroup.visible = false;
         floor.visible = false;
         grid.visible = false;
-        player.visible = !menuNinja.visible;
-        player.position.set(-2.1, 0, 0);
-        player.scale.setScalar(3.25);
-        player.rotation.y = Math.sin(elapsed * .16) * .045;
+        player.visible = false;
         menuNinja.rotation.y = Math.sin(elapsed * .16) * .045;
-        camera.position.set(-2.65, 3.65, 5.35);
-        camera.lookAt(-1.25, 2.82, 0.02);
+        camera.position.set(-2.65, 2.05, 6.2);
+        camera.lookAt(-1.35, 1.12, 0.02);
         return;
       }
 
