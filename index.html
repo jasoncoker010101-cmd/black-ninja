@@ -876,15 +876,19 @@
         grid.visible = false;
         player.visible = false;
         menuNinja.rotation.y = Math.sin(elapsed * .16) * .045;
-        // Tight portrait framing: aim at the head/upper chest, not the waist or legs.
-        camera.position.set(-2.0, 2.25, 3.65);
-        camera.lookAt(-2.0, 1.72, 0.02);
+        // Face-first portrait crop. A narrower FOV cuts off most of the legs.
+        camera.fov = 42;
+        camera.updateProjectionMatrix();
+        camera.position.set(-2.0, 2.02, 2.15);
+        camera.lookAt(-2.0, 1.86, 0.02);
         return;
       }
 
       if (!window.playerMenuReset) {
         window.playerMenuReset = true;
         menuNinja.visible = false;
+        camera.fov = 62;
+        camera.updateProjectionMatrix();
         player.visible = true;
         environmentGroup.visible = true;
         floor.visible = true;
