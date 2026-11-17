@@ -45,30 +45,123 @@
 
     .menu-content {
       position: relative;
-      width: min(570px, 88vw);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .82fr);
+      align-items: stretch;
+      gap: clamp(24px, 4vw, 54px);
+      width: min(1000px, 92vw);
+      min-height: 510px;
       margin: 0;
-      padding: clamp(30px, 5vw, 54px);
+      padding: clamp(28px, 4vw, 48px);
       overflow: hidden;
-      border: 1px solid #ffffff20;
-      border-left: 3px solid #c84b40;
+      border: 1px solid #ffffff24;
+      border-top: 2px solid #c84b40;
       border-radius: 5px;
-      background: linear-gradient(135deg, #111820eF, #080b10df 78%);
+      background: linear-gradient(115deg, #101820f2, #080b10e8 72%);
       box-shadow: 0 24px 90px #000b, inset 0 1px #ffffff12;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       animation: menu-arrive .7s ease-out both;
     }
 
-    .menu-content::after {
+    .menu-copy {
+      position: relative;
+      z-index: 2;
+      align-self: center;
+      min-width: 0;
+    }
+
+    .menu-art {
+      position: relative;
+      min-height: 410px;
+      overflow: hidden;
+      border: 1px solid #ffffff20;
+      border-radius: 3px;
+      background:
+        linear-gradient(180deg, #0a1014aa, #080b10 92%),
+        radial-gradient(ellipse at 50% 42%, #a52e2766, transparent 58%),
+        linear-gradient(135deg, #263039, #090c10 70%);
+      box-shadow: inset 0 0 70px #000b;
+    }
+
+    .menu-art::before {
       content: "";
       position: absolute;
-      top: -100px;
-      right: -95px;
-      width: 230px;
+      inset: 0;
+      opacity: .3;
+      background: repeating-linear-gradient(118deg, transparent 0 28px, #d6dce008 29px 30px);
+    }
+
+    .ninja-silhouette {
+      position: absolute;
+      left: 50%;
+      bottom: 9%;
+      width: 150px;
+      height: 290px;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 12px 24px #000);
+    }
+
+    .ninja-silhouette::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 43px;
+      width: 68px;
+      height: 76px;
+      border-radius: 48% 48% 42% 42%;
+      background: linear-gradient(145deg, #34383b, #090b0d 72%);
+      box-shadow: 0 0 0 8px #111619, 0 0 25px #d04a3b22;
+    }
+
+    .ninja-silhouette::after {
+      content: "";
+      position: absolute;
+      top: 70px;
+      left: 17px;
+      width: 120px;
+      height: 160px;
+      border-radius: 42% 42% 18% 18%;
+      background: linear-gradient(110deg, #252b2f, #07090b 68%);
+      clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+      box-shadow: inset 0 0 20px #ffffff0a;
+    }
+
+    .ninja-blade {
+      position: absolute;
+      z-index: 1;
+      top: 72px;
+      left: 112px;
+      width: 5px;
       height: 230px;
-      border: 1px solid #c84b4026;
-      border-radius: 50%;
-      box-shadow: 0 0 0 22px #c84b400a, 0 0 0 46px #c84b4008;
-      pointer-events: none;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #68747b, #e1e5e7 45%, #6e777c);
+      transform: rotate(25deg);
+      transform-origin: top;
+      box-shadow: 0 0 16px #dce4e455;
+    }
+
+    .art-stamp {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      color: #e16a5c;
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .art-caption {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      left: 18px;
+      padding-top: 12px;
+      border-top: 1px solid #ffffff30;
+      color: #aeb7c0;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     @keyframes menu-arrive {
@@ -266,8 +359,17 @@
       color: #aaa;
     }
 
-    @media (max-width: 650px) {
-      .menu-content { width: min(520px, 92vw); padding: 30px 24px; }
+    @media (max-width: 700px) {
+      #menu { overflow-y: auto; padding: 18px 0; }
+      .menu-content {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        width: min(520px, 92vw);
+        min-height: 0;
+        padding: 26px 22px;
+      }
+      .menu-art { min-height: 210px; }
+      .ninja-silhouette { transform: translateX(-50%) scale(.68); transform-origin: bottom center; }
       h1 { font-size: clamp(62px, 17vw, 92px); }
       .menu-footer { font-size: 8px; letter-spacing: 1px; }
       #help { font-size: 10px; }
@@ -283,22 +385,29 @@
 <body>
   <div id="menu">
     <div class="menu-content">
-      <div class="eyebrow">A shadow rises</div>
-      <h1>BLACK<br><span>NINJA</span></h1>
-      <div class="menu-tagline">The night belongs to you.</div>
-      <div class="subtitle">
-        Enter the forgotten training grounds. Face the incoming waves.
-        How long can you survive?
+      <div class="menu-copy">
+        <div class="eyebrow">A shadow rises</div>
+        <h1>BLACK<br><span>NINJA</span></h1>
+        <div class="menu-tagline">The night belongs to you.</div>
+        <div class="subtitle">
+          Enter the forgotten training grounds. Face the incoming waves.
+          How long can you survive?
+        </div>
+        <button id="play" type="button">Start game</button>
+        <div class="menu-note">
+          <span>WASD&nbsp; MOVE</span>
+          <span>MOUSE&nbsp; LOOK</span>
+          <span>CLICK&nbsp; ATTACK</span>
+        </div>
+        <div class="menu-footer">
+          <span>Solo survival</span>
+          <span>Training grounds / 01</span>
+        </div>
       </div>
-      <button id="play" type="button">Start game</button>
-      <div class="menu-note">
-        <span>WASD&nbsp; MOVE</span>
-        <span>MOUSE&nbsp; LOOK</span>
-        <span>CLICK&nbsp; ATTACK</span>
-      </div>
-      <div class="menu-footer">
-        <span>Solo survival</span>
-        <span>Training grounds / 01</span>
+      <div class="menu-art" aria-hidden="true">
+        <div class="art-stamp">Shadow operative / 001</div>
+        <div class="ninja-silhouette"><div class="ninja-blade"></div></div>
+        <div class="art-caption">One warrior. Endless waves.</div>
       </div>
     </div>
   </div>
