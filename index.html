@@ -32,223 +32,173 @@
       display: block;
     }
 
-    #menu, #pause {
+    #menu {
       position: fixed;
       inset: 0;
       z-index: 5;
       display: grid;
-      place-items: center;
+      grid-template-columns: minmax(0, 1fr) minmax(270px, 34vw);
+      align-items: center;
       background:
-        radial-gradient(ellipse at 72% 48%, #9e30251c 0%, transparent 42%),
-        linear-gradient(90deg, #05070bed 0%, #080b10a8 48%, #080b1070 100%);
+        radial-gradient(ellipse at 20% 48%, #a10e182e 0%, transparent 42%),
+        radial-gradient(ellipse at 52% 52%, #5e080c1c 0%, transparent 55%),
+        linear-gradient(90deg, #030405 0%, #080708 62%, #100506 100%);
+      overflow: hidden;
+    }
+
+    #menu::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent 0%, #0002 55%, #000b 100%);
     }
 
     .menu-content {
       position: relative;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, .82fr);
-      align-items: stretch;
-      gap: clamp(24px, 4vw, 54px);
-      width: min(1000px, 92vw);
-      min-height: 510px;
-      margin: 0;
-      padding: clamp(28px, 4vw, 48px);
-      overflow: hidden;
-      border: 1px solid #ffffff24;
-      border-top: 2px solid #c84b40;
-      border-radius: 5px;
-      background: linear-gradient(115deg, #101820f2, #080b10e8 72%);
-      box-shadow: 0 24px 90px #000b, inset 0 1px #ffffff12;
-      backdrop-filter: blur(14px);
-      animation: menu-arrive .7s ease-out both;
+      z-index: 1;
+      display: contents;
     }
 
     .menu-copy {
-      position: relative;
-      z-index: 2;
+      grid-column: 2;
+      grid-row: 1;
       align-self: center;
-      min-width: 0;
+      justify-self: center;
+      width: min(340px, 82%);
+      padding: 32px 24px 32px 8px;
+      animation: menu-arrive .7s ease-out both;
     }
 
-    .menu-art {
-      position: relative;
-      min-height: 410px;
-      overflow: hidden;
-      border: 1px solid #ffffff20;
-      border-radius: 3px;
-      background:
-        linear-gradient(180deg, #0a1014aa, #080b10 92%),
-        radial-gradient(ellipse at 50% 42%, #a52e2766, transparent 58%),
-        linear-gradient(135deg, #263039, #090c10 70%);
-      box-shadow: inset 0 0 70px #000b;
-    }
-
-    .menu-art::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: .3;
-      background: repeating-linear-gradient(118deg, transparent 0 28px, #d6dce008 29px 30px);
-    }
-
-    .ninja-silhouette {
-      position: absolute;
-      left: 50%;
-      bottom: 9%;
-      width: 150px;
-      height: 290px;
-      transform: translateX(-50%);
-      filter: drop-shadow(0 12px 24px #000);
-    }
-
-    .ninja-silhouette::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 43px;
-      width: 68px;
-      height: 76px;
-      border-radius: 48% 48% 42% 42%;
-      background: linear-gradient(145deg, #34383b, #090b0d 72%);
-      box-shadow: 0 0 0 8px #111619, 0 0 25px #d04a3b22;
-    }
-
-    .ninja-silhouette::after {
-      content: "";
-      position: absolute;
-      top: 70px;
-      left: 17px;
-      width: 120px;
-      height: 160px;
-      border-radius: 42% 42% 18% 18%;
-      background: linear-gradient(110deg, #252b2f, #07090b 68%);
-      clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
-      box-shadow: inset 0 0 20px #ffffff0a;
-    }
-
-    .ninja-blade {
-      position: absolute;
-      z-index: 1;
-      top: 72px;
-      left: 112px;
-      width: 5px;
-      height: 230px;
-      border-radius: 5px;
-      background: linear-gradient(90deg, #68747b, #e1e5e7 45%, #6e777c);
-      transform: rotate(25deg);
-      transform-origin: top;
-      box-shadow: 0 0 16px #dce4e455;
-    }
-
-    .art-stamp {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      color: #e16a5c;
-      font-size: 9px;
-      font-weight: bold;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .art-caption {
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
-      left: 18px;
-      padding-top: 12px;
-      border-top: 1px solid #ffffff30;
-      color: #aeb7c0;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+    .menu-art, .ninja-silhouette, .ninja-blade,
+    .art-stamp, .art-caption, .menu-tagline, .menu-footer {
+      display: none;
     }
 
     @keyframes menu-arrive {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateX(18px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     .eyebrow {
       display: flex;
       align-items: center;
       gap: 10px;
-      color: #e16a5c;
+      color: #e45a58;
       font-size: 10px;
       font-weight: bold;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       text-transform: uppercase;
     }
 
     .eyebrow::before {
       content: "";
-      width: 24px;
+      width: 26px;
       height: 1px;
-      background: #d85a4d;
+      background: #e34b4b;
+      box-shadow: 0 0 12px #f33;
     }
 
     h1 {
       position: relative;
       z-index: 1;
-      margin: 22px 0 16px;
-      font-size: clamp(64px, 11vw, 116px);
-      line-height: .82;
-      letter-spacing: .035em;
-      color: #f4f2ed;
+      margin: 20px 0 13px;
+      color: #f5f2f0;
+      font-size: clamp(48px, 6vw, 76px);
+      line-height: .86;
+      letter-spacing: .025em;
       text-shadow: 0 8px 35px #000;
     }
 
-    h1 span {
-      color: #d45146;
-    }
-
-    .menu-tagline {
-      margin-top: 24px;
-      color: #e5e7e9;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
+    h1 span { color: #d82c35; }
 
     .subtitle {
-      max-width: 370px;
-      margin: 12px 0 28px;
-      color: #aeb7c0;
-      font-size: 14px;
-      line-height: 1.75;
+      max-width: 300px;
+      margin: 0 0 30px;
+      color: #a9a4a5;
+      font-size: 13px;
+      line-height: 1.7;
     }
 
-    #play {
-      display: inline-flex;
+    .menu-actions {
+      display: grid;
+      gap: 11px;
+      width: 100%;
+    }
+
+    .menu-actions button {
+      display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 28px;
-      min-width: 235px;
-      padding: 16px 20px;
-      border: 1px solid #f07868;
-      border-radius: 3px;
-      background: linear-gradient(110deg, #b43c34, #79231f);
-      color: white;
+      width: 100%;
+      min-height: 52px;
+      padding: 0 17px;
+      border: 1px solid #ffffff24;
+      border-left: 3px solid #a92730;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #171719e8, #0b0b0de8);
+      color: #e9e5e5;
       cursor: pointer;
       font-size: 11px;
       font-weight: bold;
       letter-spacing: 2px;
+      text-align: left;
       text-transform: uppercase;
-      box-shadow: 0 8px 24px #8e292744;
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      transition: .18s ease;
     }
 
-    #play::after {
-      content: "→";
-      font-size: 20px;
-      line-height: 12px;
+    .menu-actions button::after {
+      content: "›";
+      color: #e04b50;
+      font-size: 23px;
+      font-weight: normal;
     }
 
-    #play:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.15);
-      box-shadow: 0 12px 30px #8e292766;
+    .menu-actions button:hover {
+      transform: translateX(4px);
+      border-color: #c43a43;
+      background: linear-gradient(90deg, #351216, #171012);
+      box-shadow: 0 5px 22px #a10e1828;
+    }
+
+    .menu-actions #play {
+      border-color: #e24b50;
+      border-left-width: 3px;
+      background: linear-gradient(100deg, #b21f2c, #64131c);
+      color: white;
+      box-shadow: 0 8px 28px #a10e1838;
+    }
+
+    .menu-actions #play::after { color: white; }
+    .menu-actions #play:hover { filter: brightness(1.2); }
+
+    .menu-note {
+      margin-top: 22px;
+      color: #716d70;
+      font-size: 9px;
+      letter-spacing: 1.7px;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .menu-info {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid #ffffff20;
+      border-left: 2px solid #d33b43;
+      background: #080809eF;
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .menu-info strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #f0eeee;
+      font-size: 10px;
+      letter-spacing: 2px;
     }
 
     button {
@@ -267,34 +217,52 @@
 
     button:hover { background: #c3483d; }
 
-    .menu-note {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 25px;
-      color: #929ba5;
-      font-size: 9px;
-      letter-spacing: 1.5px;
+    #pause {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 6;
+      place-items: center;
+      background: #050608dd;
+      text-align: center;
     }
 
-    .menu-note span {
-      padding: 7px 9px;
-      border: 1px solid #ffffff18;
-      border-radius: 3px;
-      background: #ffffff08;
+    #pause h2 {
+      font-size: 42px;
+      letter-spacing: 6px;
     }
 
-    .menu-footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 25px;
-      padding-top: 15px;
-      border-top: 1px solid #ffffff18;
-      color: #65717c;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+    #pause p {
+      margin-bottom: 22px;
+      color: #aaa;
+    }
+
+    @media (max-width: 700px) {
+      #menu {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) auto;
+        align-items: end;
+        background:
+          linear-gradient(0deg, #050506 0%, #050506f2 36%, #05050655 72%, #05050699 100%),
+          radial-gradient(ellipse at 45% 28%, #a10e183b, transparent 58%),
+          #030405;
+      }
+      .menu-copy {
+        grid-column: 1;
+        grid-row: 2;
+        justify-self: center;
+        width: min(430px, 92%);
+        padding: 10px 18px 26px;
+      }
+      h1 { font-size: clamp(48px, 13vw, 68px); }
+      .subtitle { margin-bottom: 18px; }
+      .menu-actions { grid-template-columns: 1fr; gap: 8px; }
+      .menu-actions button { min-height: 46px; }
+      .menu-note { margin-top: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-copy, .menu-actions button { animation: none; transition: none; }
     }
 
     #hud {
@@ -386,28 +354,16 @@
   <div id="menu">
     <div class="menu-content">
       <div class="menu-copy">
-        <div class="eyebrow">A shadow rises</div>
+        <div class="eyebrow">Enter the shadows</div>
         <h1>BLACK<br><span>NINJA</span></h1>
-        <div class="menu-tagline">The night belongs to you.</div>
-        <div class="subtitle">
-          Enter the forgotten training grounds. Face the incoming waves.
-          How long can you survive?
+        <div class="subtitle">A lone warrior. An endless army. How long will you survive?</div>
+        <div class="menu-actions">
+          <button id="play" type="button">Start game</button>
+          <button id="menuControls" type="button">How to play</button>
+          <button id="menuCredits" type="button">Credits</button>
         </div>
-        <button id="play" type="button">Start game</button>
-        <div class="menu-note">
-          <span>WASD&nbsp; MOVE</span>
-          <span>MOUSE&nbsp; LOOK</span>
-          <span>CLICK&nbsp; ATTACK</span>
-        </div>
-        <div class="menu-footer">
-          <span>Solo survival</span>
-          <span>Training grounds / 01</span>
-        </div>
-      </div>
-      <div class="menu-art" aria-hidden="true">
-        <div class="art-stamp">Shadow operative / 001</div>
-        <div class="ninja-silhouette"><div class="ninja-blade"></div></div>
-        <div class="art-caption">One warrior. Endless waves.</div>
+        <div class="menu-info" id="menuInfo" aria-live="polite"></div>
+        <div class="menu-note">Solo survival&nbsp; / &nbsp;Training grounds</div>
       </div>
     </div>
   </div>
@@ -436,6 +392,15 @@
   <script>
     window.gameStarted = false;
 
+    const menuInfo = document.getElementById("menuInfo");
+    document.getElementById("menuControls").addEventListener("click", function () {
+      menuInfo.style.display = "block";
+      menuInfo.innerHTML = "<strong>HOW TO PLAY</strong>WASD to move · Mouse to look · Click or Space to attack · Shift to run · Escape to pause";
+    });
+    document.getElementById("menuCredits").addEventListener("click", function () {
+      menuInfo.style.display = "block";
+      menuInfo.innerHTML = "<strong>BLACK NINJA</strong>A solo survival game built with Three.js. Environment assets are credited in ASSET_CREDITS.md.";
+    });
     document.getElementById("play").addEventListener("click", function () {
       window.gameStarted = true;
       document.getElementById("menu").style.display = "none";
@@ -449,8 +414,8 @@
     import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x090d13);
-    scene.fog = new THREE.FogExp2(0x090d13, 0.018);
+    scene.background = new THREE.Color(0x030405);
+    scene.fog = new THREE.FogExp2(0x090609, 0.018);
 
     const camera = new THREE.PerspectiveCamera(
       62, innerWidth / innerHeight, 0.1, 150
@@ -466,6 +431,13 @@
     document.body.appendChild(renderer.domElement);
 
     scene.add(new THREE.HemisphereLight(0x9da9bd, 0x171512, 1.8));
+
+    const menuRedLight = new THREE.PointLight(0xd7192b, 95, 24, 2);
+    menuRedLight.position.set(-5, 5, -2);
+    scene.add(menuRedLight);
+    const menuRimLight = new THREE.PointLight(0x7b101a, 65, 20, 2);
+    menuRimLight.position.set(2, 3, -5);
+    scene.add(menuRimLight);
 
     const moon = new THREE.DirectionalLight(0xb9c9df, 3);
     moon.position.set(-9, 16, 8);
@@ -847,12 +819,23 @@
     }
 
     function update(dt, elapsed) {
-      // Cinematic menu view before the player starts
+      // Close-up menu portrait: the ninja fills the left side of the screen.
       if (!window.gameStarted) {
-        camera.position.set(Math.sin(elapsed * .12) * 8, 3.1, 8);
-        camera.lookAt(0, 1.2, 0);
-        player.rotation.y = Math.sin(elapsed * .2) * .12;
+        player.position.set(-2.1, 0, 0);
+        player.scale.setScalar(3.25);
+        player.rotation.y = Math.sin(elapsed * .16) * .045;
+        camera.position.set(-3.0, 5.65, 8.1);
+        camera.lookAt(-2.05, 5.0, 0.05);
         return;
+      }
+
+      if (!window.playerMenuReset) {
+        window.playerMenuReset = true;
+        player.position.set(0, 0, 0);
+        player.scale.setScalar(1);
+        player.rotation.set(0, 0, 0);
+        yaw = 0;
+        pitch = -.08;
       }
 
       if (paused || dead) return;
