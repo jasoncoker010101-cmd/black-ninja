@@ -38,43 +38,132 @@
       z-index: 5;
       display: grid;
       place-items: center;
-      background: linear-gradient(90deg, #07090df0, #07090d68 65%, #07090d88);
+      background:
+        radial-gradient(ellipse at 72% 48%, #9e30251c 0%, transparent 42%),
+        linear-gradient(90deg, #05070bed 0%, #080b10a8 48%, #080b1070 100%);
     }
 
     .menu-content {
-      width: min(580px, 88vw);
-      margin-left: 8vw;
+      position: relative;
+      width: min(570px, 88vw);
+      margin: 0;
+      padding: clamp(30px, 5vw, 54px);
+      overflow: hidden;
+      border: 1px solid #ffffff20;
+      border-left: 3px solid #c84b40;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #111820eF, #080b10df 78%);
+      box-shadow: 0 24px 90px #000b, inset 0 1px #ffffff12;
+      backdrop-filter: blur(12px);
+      animation: menu-arrive .7s ease-out both;
+    }
+
+    .menu-content::after {
+      content: "";
+      position: absolute;
+      top: -100px;
+      right: -95px;
+      width: 230px;
+      height: 230px;
+      border: 1px solid #c84b4026;
+      border-radius: 50%;
+      box-shadow: 0 0 0 22px #c84b400a, 0 0 0 46px #c84b4008;
+      pointer-events: none;
+    }
+
+    @keyframes menu-arrive {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .eyebrow {
-      color: #c75a4d;
-      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e16a5c;
+      font-size: 10px;
       font-weight: bold;
-      letter-spacing: 5px;
+      letter-spacing: 4px;
       text-transform: uppercase;
     }
 
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: #d85a4d;
+    }
+
     h1 {
-      margin: 18px 0;
-      font-size: clamp(58px, 10vw, 112px);
-      line-height: .86;
-      letter-spacing: 5px;
-      text-shadow: 0 5px 35px #000;
+      position: relative;
+      z-index: 1;
+      margin: 22px 0 16px;
+      font-size: clamp(64px, 11vw, 116px);
+      line-height: .82;
+      letter-spacing: .035em;
+      color: #f4f2ed;
+      text-shadow: 0 8px 35px #000;
+    }
+
+    h1 span {
+      color: #d45146;
+    }
+
+    .menu-tagline {
+      margin-top: 24px;
+      color: #e5e7e9;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
     }
 
     .subtitle {
-      max-width: 390px;
-      margin: 22px 0 32px;
-      color: #b7b9bc;
-      font-size: 15px;
-      line-height: 1.7;
+      max-width: 370px;
+      margin: 12px 0 28px;
+      color: #aeb7c0;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    #play {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      min-width: 235px;
+      padding: 16px 20px;
+      border: 1px solid #f07868;
+      border-radius: 3px;
+      background: linear-gradient(110deg, #b43c34, #79231f);
+      color: white;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 24px #8e292744;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    #play::after {
+      content: "→";
+      font-size: 20px;
+      line-height: 12px;
+    }
+
+    #play:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 12px 30px #8e292766;
     }
 
     button {
       position: relative;
       z-index: 10;
-      padding: 15px 34px;
+      padding: 13px 24px;
       border: 1px solid #c75749;
+      border-radius: 3px;
       background: #9f302b;
       color: white;
       cursor: pointer;
@@ -83,15 +172,36 @@
       text-transform: uppercase;
     }
 
-    button:hover {
-      background: #c3483d;
-    }
+    button:hover { background: #c3483d; }
 
     .menu-note {
-      margin-top: 20px;
-      color: #85888d;
-      font-size: 11px;
-      letter-spacing: 1px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 25px;
+      color: #929ba5;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+    }
+
+    .menu-note span {
+      padding: 7px 9px;
+      border: 1px solid #ffffff18;
+      border-radius: 3px;
+      background: #ffffff08;
+    }
+
+    .menu-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid #ffffff18;
+      color: #65717c;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     #hud {
@@ -157,8 +267,15 @@
     }
 
     @media (max-width: 650px) {
-      .menu-content { margin: 0; }
+      .menu-content { width: min(520px, 92vw); padding: 30px 24px; }
+      h1 { font-size: clamp(62px, 17vw, 92px); }
+      .menu-footer { font-size: 8px; letter-spacing: 1px; }
       #help { font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-content { animation: none; }
+      #play { transition: none; }
     }
   </style>
 </head>
@@ -167,13 +284,22 @@
   <div id="menu">
     <div class="menu-content">
       <div class="eyebrow">A shadow rises</div>
-      <h1>BLACK<br>NINJA</h1>
+      <h1>BLACK<br><span>NINJA</span></h1>
+      <div class="menu-tagline">The night belongs to you.</div>
       <div class="subtitle">
-        The old training grounds have fallen silent. Draw your blade.
-        Hold your ground. Survive the night.
+        Enter the forgotten training grounds. Face the incoming waves.
+        How long can you survive?
       </div>
-      <button id="play" type="button">Enter the grounds</button>
-      <div class="menu-note">WASD MOVE · MOUSE LOOK · CLICK ATTACK</div>
+      <button id="play" type="button">Start game</button>
+      <div class="menu-note">
+        <span>WASD&nbsp; MOVE</span>
+        <span>MOUSE&nbsp; LOOK</span>
+        <span>CLICK&nbsp; ATTACK</span>
+      </div>
+      <div class="menu-footer">
+        <span>Solo survival</span>
+        <span>Training grounds / 01</span>
+      </div>
     </div>
   </div>
 
