@@ -40,9 +40,8 @@
       grid-template-columns: minmax(0, 1fr) minmax(270px, 34vw);
       align-items: center;
       background:
-        radial-gradient(ellipse at 20% 48%, #a10e182e 0%, transparent 42%),
-        radial-gradient(ellipse at 52% 52%, #5e080c1c 0%, transparent 55%),
-        linear-gradient(90deg, #03040518 0%, #08070835 62%, #10050688 100%);
+        radial-gradient(ellipse at 23% 48%, #9e101b35 0%, transparent 43%),
+        linear-gradient(90deg, transparent 0%, #03040512 48%, #030405f5 100%);
       overflow: hidden;
     }
 
@@ -51,7 +50,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: linear-gradient(90deg, transparent 0%, #0001 55%, #0008 100%);
+      background: linear-gradient(90deg, transparent 0%, transparent 48%, #0008 100%);
     }
 
     .menu-content {
@@ -457,6 +456,13 @@
     grid.position.y = 0.015;
     scene.add(grid);
 
+    // Keep the arena hidden behind the title screen.
+    const environmentGroup = new THREE.Group();
+    environmentGroup.visible = false;
+    scene.add(environmentGroup);
+    floor.visible = false;
+    grid.visible = false;
+
     // Downloadable CC0 GLB scenery from Gobkit's Nature Kit.
     // A lightweight procedural fallback keeps the arena playable if a model host is offline.
     const environmentLoader = new GLTFLoader();
@@ -507,7 +513,7 @@
           object.receiveShadow = true;
         }
       });
-      scene.add(group);
+      environmentGroup.add(group);
     }
 
     function ringPlacements(count, minRadius, maxRadius, sizeMin, sizeMax) {
@@ -548,7 +554,7 @@
                 object.receiveShadow = true;
               }
             });
-            scene.add(model);
+            environmentGroup.add(model);
           }
         },
         undefined,
@@ -660,6 +666,13 @@
     menuNinja.visible = false;
     scene.add(menuNinja);
 
+    const menuKeyLight = new THREE.DirectionalLight(0xe5e8f2, 5.5);
+    menuKeyLight.position.set(-4, 7, 6);
+    scene.add(menuKeyLight);
+    const menuFillLight = new THREE.PointLight(0x9b2631, 24, 13, 2);
+    menuFillLight.position.set(-4, 3.5, 2);
+    scene.add(menuFillLight);
+
     environmentLoader.load(
       "./blackclothed.glb",
       gltf => {
@@ -667,7 +680,7 @@
         const bounds = new THREE.Box3().setFromObject(model);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
-        const targetHeight = 6.0;
+        const targetHeight = 3.4;
         model.scale.setScalar(targetHeight / Math.max(size.y, 0.001));
         model.position.set(
           -center.x * model.scale.x,
@@ -681,8 +694,9 @@
           }
         });
         menuNinja.add(model);
-        menuNinja.position.set(-2.1, 0, 0);
+        menuNinja.position.set(-2.0, 0, 0);
         menuNinja.visible = !window.gameStarted;
+        player.visible = false;
       },
       undefined,
       error => {
@@ -724,6 +738,7 @@
       const monster = makeCharacter(true);
       monster.position.set(x, 0, z);
       monster.userData.hp = 2;
+      monster.visible = !!window.gameStarted;
       scene.add(monster);
       monsters.push(monster);
     }
@@ -856,13 +871,16 @@
     function update(dt, elapsed) {
       // Close-up menu portrait: the ninja fills the left side of the screen.
       if (!window.gameStarted) {
+        environmentGroup.visible = false;
+        floor.visible = false;
+        grid.visible = false;
         player.visible = !menuNinja.visible;
         player.position.set(-2.1, 0, 0);
         player.scale.setScalar(3.25);
         player.rotation.y = Math.sin(elapsed * .16) * .045;
         menuNinja.rotation.y = Math.sin(elapsed * .16) * .045;
-        camera.position.set(-3.0, 4.35, 8.1);
-        camera.lookAt(-1.65, 3.15, 0.05);
+        camera.position.set(-2.65, 3.65, 5.35);
+        camera.lookAt(-1.25, 2.82, 0.02);
         return;
       }
 
@@ -870,6 +888,10 @@
         window.playerMenuReset = true;
         menuNinja.visible = false;
         player.visible = true;
+        environmentGroup.visible = true;
+        floor.visible = true;
+        grid.visible = true;
+        monsters.forEach(monster => { monster.visible = true; });
         player.position.set(0, 0, 0);
         player.scale.setScalar(1);
         player.rotation.set(0, 0, 0);
