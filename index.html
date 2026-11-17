@@ -42,7 +42,7 @@
       background:
         radial-gradient(ellipse at 20% 48%, #a10e182e 0%, transparent 42%),
         radial-gradient(ellipse at 52% 52%, #5e080c1c 0%, transparent 55%),
-        linear-gradient(90deg, #030405 0%, #080708 62%, #100506 100%);
+        linear-gradient(90deg, #03040518 0%, #08070835 62%, #10050688 100%);
       overflow: hidden;
     }
 
@@ -51,7 +51,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: linear-gradient(90deg, transparent 0%, #0002 55%, #000b 100%);
+      background: linear-gradient(90deg, transparent 0%, #0001 55%, #0008 100%);
     }
 
     .menu-content {
@@ -243,9 +243,9 @@
         grid-template-rows: minmax(0, 1fr) auto;
         align-items: end;
         background:
-          linear-gradient(0deg, #050506 0%, #050506f2 36%, #05050655 72%, #05050699 100%),
+          linear-gradient(0deg, #050506 0%, #050506e8 36%, #05050655 72%, #05050655 100%),
           radial-gradient(ellipse at 45% 28%, #a10e183b, transparent 58%),
-          #030405;
+          #03040522;
       }
       .menu-copy {
         grid-column: 1;
@@ -655,6 +655,41 @@
     const player = makeCharacter();
     scene.add(player);
 
+    // Real menu portrait model. Keep the gameplay character separate.
+    const menuNinja = new THREE.Group();
+    menuNinja.visible = false;
+    scene.add(menuNinja);
+
+    environmentLoader.load(
+      "./blackclothed.glb",
+      gltf => {
+        const model = gltf.scene;
+        const bounds = new THREE.Box3().setFromObject(model);
+        const size = bounds.getSize(new THREE.Vector3());
+        const center = bounds.getCenter(new THREE.Vector3());
+        const targetHeight = 6.0;
+        model.scale.setScalar(targetHeight / Math.max(size.y, 0.001));
+        model.position.set(
+          -center.x * model.scale.x,
+          -bounds.min.y * model.scale.y,
+          -center.z * model.scale.z
+        );
+        model.traverse(object => {
+          if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+          }
+        });
+        menuNinja.add(model);
+        menuNinja.position.set(-2.1, 0, 0);
+        menuNinja.visible = !window.gameStarted;
+      },
+      undefined,
+      error => {
+        console.warn("Menu character model could not be loaded. Using the built-in character.", error);
+      }
+    );
+
     // Simple katana held beside the character
     const sword = new THREE.Group();
     sword.position.set(.52, 1.25, .12);
@@ -821,16 +856,20 @@
     function update(dt, elapsed) {
       // Close-up menu portrait: the ninja fills the left side of the screen.
       if (!window.gameStarted) {
+        player.visible = !menuNinja.visible;
         player.position.set(-2.1, 0, 0);
         player.scale.setScalar(3.25);
         player.rotation.y = Math.sin(elapsed * .16) * .045;
-        camera.position.set(-3.0, 5.65, 8.1);
-        camera.lookAt(1.05, 5.0, 0.05);
+        menuNinja.rotation.y = Math.sin(elapsed * .16) * .045;
+        camera.position.set(-3.0, 4.35, 8.1);
+        camera.lookAt(-1.65, 3.15, 0.05);
         return;
       }
 
       if (!window.playerMenuReset) {
         window.playerMenuReset = true;
+        menuNinja.visible = false;
+        player.visible = true;
         player.position.set(0, 0, 0);
         player.scale.setScalar(1);
         player.rotation.set(0, 0, 0);
