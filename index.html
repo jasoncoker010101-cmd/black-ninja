@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black Ninja — Starter Arena</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; background: #080b10; color: white; font-family: Arial, sans-serif; }
+    canvas { display: block; }
+    #hud {
+      position: fixed; inset: 16px auto auto 16px; z-index: 2;
+      padding: 12px 15px; min-width: 210px;
+      background: #080b10cc; border: 1px solid #ffffff30; border-radius: 8px;
+      line-height: 1.6; pointer-events: none;
+    }
+    #help {
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+      padding: 9px 14px; background: #080b10cc; border-radius: 8px;
+      color: #ddd; font-size: 13px; text-align: center; pointer-events: none;
+    }
+    #message {
+      position: fixed; inset: 0; display: grid; place-items: center; z-index: 3;
+      background: #06080bcc; text-align: center; cursor: pointer;
+    }
+    #message div { max-width: 440px; padding: 24px; }
+    #message h1 { margin: 0 0 10px; letter-spacing: 5px; }
+    #message p { color: #ccc; line-height: 1.5; }
+    .bar { width: 180px; height: 10px; background: #333; border-radius: 8px; overflow: hidden; }
+    #health { height: 100%; width: 100%; background: #d43c42; transition: width .2s; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <strong>BLACK NINJA</strong><br>
+    Health
+    <div class="bar"><div id="health"></div></div>
+    Monsters defeated: <span id="score">0</span>
+  </div>
+  <div id="help">WASD move · Mouse look · Click / Space attack · Shift run</div>
+  <div id="message">
+    <div>
+      <h1>BLACK NINJA</h1>
+      <p>Enter the training grounds. Click to start and capture the mouse.</p>
+      <p>WASD to move · Mouse to look · Click or Space to swing your katana</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x090e17);
+    scene.fog = new THREE.Fog(0x090e17, 24, 85);
+
+    const camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 150);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    scene.add(new THREE.HemisphereLight(0x9baac4, 0x27231f, 2));
+    const moon = new THREE.DirectionalLight(0xd7e4ff, 3);
+    moon.position.set(-8, 16, 10);
+    moon.castShadow = true;
+    moon.shadow.mapSize.set(2048, 2048);
+    scene.add(moon);
+
+    // Arena floor and boundary
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(100, 100),
+      new THREE.MeshStandardMaterial({ color: 0x252a2c, roughness: 0.95 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    const grid = new THREE.GridHelper(100, 50, 0x464b4c, 0x34393b);
+    grid.position.y = 0.015;
+    scene.add(grid);
+
+    const boundary = new THREE.Mesh(
+      new THREE.CylinderGeometry(38, 38, 0.3, 80, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x9e3434, wireframe: true, transparent: true, opacity: 0.3 })
+    );
+    boundary.position.y = 0.2;
+    scene.add(boundary);
+
+    // Small rocks around the arena edge
+    const rockMat = new THREE.MeshStandardMaterial({ color: 0x424548, roughness: 1 });
+    for (let i = 0; i < 48; i++) {
+      const a = i / 48 * Math.PI * 2;
+      const r = 34 + Math.random() * 3;
+      const rock = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(0.45 + Math.random() * 0.8, 0),
+        rockMat
+      );
+      rock.position.set(Math.cos(a) * r, 0.3, Math.sin(a) * r);
+      rock.scale.y = 0.5 + Math.random() * 0.6;
+      rock.rotation.set(Math.random(), Math.random(), Math.random());
+      rock.castShadow = true;
+      scene.add(rock);
+    }
+
+    function makePerson({ monster = false } = {}) {
+      const group = new THREE.Group();
+      const outfit = new THREE.MeshStandardMaterial({
+        color: monster ? 0x354335 : 0x101317,
+        roughness: 0.78
+      });
+      const skin = new THREE.MeshStandardMaterial({
+        color: monster ? 0x74845d : 0xc49b78,
+        roughness: 0.8
+      });
+
+      function part(geometry, material, x, y, z) {
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+        group.add(mesh);
+        return mesh;
+      }
+
+      part(new THREE.CapsuleGeometry(0.38, 0.72, 4, 8), outfit, 0, 1.2, 0);
+      part(new THREE.SphereGeometry(0.3, 16, 12), skin, 0, 2.05, 0);
+      part(new THREE.BoxGeometry(0.5, 0.14, 0.5), outfit, 0, 2.02, 0.07);
+
+      for (const side of [-1, 1]) {
+        part(new THREE.CapsuleGeometry(0.12, 0.55, 3, 6), outfit, side * 0.48, 1.22, 0);
+        part(new THREE.CapsuleGeometry(0.15, 0.52, 3, 6), outfit, side * 0.18, 0.42, 0);
+        if (monster) {
+          const eye = part(new THREE.SphereGeometry(0.045, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xff392b }), side * 0.12, 2.08, 0.26);
+        }
+      }
+
+      return group;
+    }
+
+    const player = makePerson();
+    scene.add(player);
+
+    // Katana: simple metal blade, guard, and wrapped handle
+    const swordPivot = new THREE.Group();
+    swordPivot.position.set(0.48, 1.35, 0.05);
+    player.add(swordPivot);
+
+    const blade = new THREE.Mesh(
+      new THREE.BoxGeometry(0.09, 1.12, 0.035),
+      new THREE.MeshStandardMaterial({ color: 0xcbd4dc, metalness: 0.88, roughness: 0.22 })
+    );
+    blade.position.y = 0.64;
+    blade.castShadow = true;
+    swordPivot.add(blade);
+
+    const edge = new THREE.Mesh(
+      new THREE.BoxGeometry(0.018, 1.04, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.9, roughness: 0.15 })
+    );
+    edge.position.set(-0.039, 0.65, 0);
+    swordPivot.add(edge);
+
+    const guard = new THREE.Mesh(
+      new THREE.BoxGeometry(0.32, 0.07, 0.09),
+      new THREE.MeshStandardMaterial({ color: 0x17191c, metalness: 0.7, roughness: 0.3 })
+    );
+    guard.position.y = 0.08;
+    swordPivot.add(guard);
+
+    const handle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.055, 0.055, 0.48, 8),
+      new THREE.MeshStandardMaterial({ color: 0x17100f, roughness: 0.8 })
+    );
+    handle.position.y = -0.18;
+    swordPivot.add(handle);
+
+    swordPivot.rotation.z = -0.7;
+
+    const monsters = [];
+    const monsterMat = new THREE.MeshStandardMaterial({ color: 0x304230, roughness: 0.9 });
+    function spawnMonster(x, z) {
+      const body = makePerson({ monster: true });
+      body.position.set(x, 0, z);
+      body.userData.hp = 2;
+      body.userData.hitFlash = 0;
+      scene.add(body);
+      monsters.push(body);
+    }
+    for (let i = 0; i < 6; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 9 + Math.random() * 9;
+      spawnMonster(Math.cos(a) * r, Math.sin(a) * r);
+    }
+
+    let health = 100;
+    let score = 0;
+    let yaw = 0;
+    let pitch = -0.12;
+    let attackTime = 0;
+    let attackCooldown = 0;
+    let invulnerable = 0;
+    const keys = {};
+    const clock = new THREE.Clock();
+    const message = document.querySelector("#message");
+
+    function startGame() {
+      renderer.domElement.requestPointerLock?.();
+      message.style.display = "none";
+    }
+    message.addEventListener("click", startGame);
+    renderer.domElement.addEventListener("click", () => {
+      if (message.style.display === "none" && document.pointerLockElement !== renderer.domElement) {
+        renderer.domElement.requestPointerLock?.();
+      }
+    });
+
+    document.addEventListener("pointerlockchange", () => {
+      if (document.pointerLockElement === renderer.domElement) message.style.display = "none";
+    });
+    document.addEventListener("mousemove", e => {
+      if (document.pointerLockElement !== renderer.domElement) return;
+      yaw -= e.movementX * 0.0025;
+      pitch = THREE.MathUtils.clamp(pitch - e.movementY * 0.0018, -0.55, 0.35);
+    });
+
+    addEventListener("keydown", e => {
+      keys[e.code] = true;
+      if (e.code === "Space") { e.preventDefault(); attack(); }
+    });
+    addEventListener("keyup", e => keys[e.code] = false);
+    addEventListener("mousedown", e => { if (e.button === 0) attack(); });
+
+    function attack() {
+      if (attackCooldown > 0 || health <= 0) return;
+      attackTime = 0.42;
+      attackCooldown = 0.55;
+      // Hit monsters in front of the player
+      for (const m of monsters) {
+        if (m.userData.hp <= 0) continue;
+        const dx = m.position.x - player.position.x;
+        const dz = m.position.z - player.position.z;
+        const distance = Math.hypot(dx, dz);
+        const facingX = -Math.sin(yaw);
+        const facingZ = -Math.cos(yaw);
+        const dot = (dx * facingX + dz * facingZ) / Math.max(distance, 0.001);
+        if (distance < 3.1 && dot > 0.25) {
+          m.userData.hp--;
+          m.userData.hitFlash = 0.15;
+          m.position.x += facingX * 0.8;
+          m.position.z += facingZ * 0.8;
+          if (m.userData.hp <= 0) {
+            scene.remove(m);
+            score++;
+            document.querySelector("#score").textContent = score;
+          }
+        }
+      }
+    }
+
+    function update(dt) {
+      attackCooldown = Math.max(0, attackCooldown - dt);
+      invulnerable = Math.max(0, invulnerable - dt);
+
+      const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+      const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+      const move = new THREE.Vector3();
+      if (keys.KeyW) move.add(forward);
+      if (keys.KeyS) move.sub(forward);
+      if (keys.KeyD) move.add(right);
+      if (keys.KeyA) move.sub(right);
+
+      if (move.lengthSq() > 0) {
+        move.normalize();
+        const speed = keys.ShiftLeft || keys.ShiftRight ? 7.5 : 4.8;
+        player.position.addScaledVector(move, speed * dt);
+        player.rotation.y = Math.atan2(-move.x, -move.z);
+      }
+      player.position.x = THREE.MathUtils.clamp(player.position.x, -36, 36);
+      player.position.z = THREE.MathUtils.clamp(player.position.z, -36, 36);
+
+      if (attackTime > 0) {
+        attackTime -= dt;
+        const swing = Math.sin((0.42 - attackTime) / 0.42 * Math.PI);
+        swordPivot.rotation.z = -0.7 + swing * 2.15;
+        swordPivot.rotation.x = swing * 0.35;
+      } else {
+        swordPivot.rotation.z = THREE.MathUtils.damp(swordPivot.rotation.z, -0.7, 12, dt);
+        swordPivot.rotation.x = THREE.MathUtils.damp(swordPivot.rotation.x, 0, 12, dt);
+      }
+
+      for (const m of monsters) {
+        if (m.userData.hp <= 0) continue;
+        const dx = player.position.x - m.position.x;
+        const dz = player.position.z - m.position.z;
+        const d = Math.hypot(dx, dz);
+        if (d > 1.25) {
+          m.position.x += dx / d * 1.45 * dt;
+          m.position.z += dz / d * 1.45 * dt;
+          m.rotation.y = Math.atan2(-dx, -dz);
+        } else if (invulnerable <= 0) {
+          health = Math.max(0, health - 12);
+          invulnerable = 0.75;
+          document.querySelector("#health").style.width = health + "%";
+          if (health <= 0) {
+            message.style.display = "grid";
+            message.querySelector("h1").textContent = "DEFEATED";
+            message.querySelector("p").textContent = "Refresh the page to try again.";
+          }
+        }
+        if (m.userData.hitFlash > 0) m.userData.hitFlash -= dt;
+      }
+
+      const target = player.position.clone().add(new THREE.Vector3(0, 1.55, 0));
+      const camOffset = new THREE.Vector3(
+        Math.sin(yaw) * 5.8,
+        2.3 - pitch * 3,
+        Math.cos(yaw) * 5.8
+      );
+      camera.position.lerp(target.clone().add(camOffset), 1 - Math.exp(-7 * dt));
+      camera.lookAt(target.x, target.y + pitch * 2, target.z);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.04);
+      update(dt);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
