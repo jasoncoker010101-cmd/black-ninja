@@ -348,7 +348,7 @@
         error => {
           console.warn("Scenery model could not be loaded:", url, error);
           for (const item of placements) {
-            addSceneryFallback(kind, item.x, item.z, item.size / 5);
+            addSceneryFallback(kind, item.x, item.z, kind === "tree" ? item.size / 5 : item.size);
           }
         }
       );
