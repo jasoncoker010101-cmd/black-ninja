@@ -4,67 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BLACK NINJA</title>
+
+  <!-- Lets GLTFLoader find the Three.js module it depends on. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
-      margin: 0; overflow: hidden; background: #080a0d; color: #eee;
+      margin: 0;
+      overflow: hidden;
+      background: #080a0d;
+      color: #eee;
       font-family: Arial, Helvetica, sans-serif;
     }
-    canvas { display: block; }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: block;
+    }
+
     .screen {
-      position: fixed; inset: 0; z-index: 5;
-      display: grid; place-items: center;
-      background: linear-gradient(90deg, #07090de8, #07090d6a 60%, #07090d88);
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(90deg, #07090df0, #07090d68 65%, #07090d88);
     }
-    #menu { cursor: default; }
-    .menu-content { width: min(580px, 90vw); margin-left: 8vw; }
+
+    .menu-content {
+      width: min(580px, 88vw);
+      margin-left: 8vw;
+    }
+
     .eyebrow {
-      color: #bd5145; font-size: 11px; font-weight: bold;
-      letter-spacing: 5px; text-transform: uppercase;
+      color: #c75a4d;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      text-transform: uppercase;
     }
+
     h1 {
-      font-size: clamp(58px, 10vw, 112px); line-height: .86;
-      letter-spacing: 5px; margin: 18px 0;
+      margin: 18px 0;
+      font-size: clamp(58px, 10vw, 112px);
+      line-height: .86;
+      letter-spacing: 5px;
       text-shadow: 0 5px 35px #000;
     }
+
     .subtitle {
-      max-width: 390px; color: #b7b9bc; line-height: 1.7;
-      font-size: 15px; margin: 22px 0 32px;
+      max-width: 390px;
+      margin: 22px 0 32px;
+      color: #b7b9bc;
+      font-size: 15px;
+      line-height: 1.7;
     }
+
     button {
-      border: 1px solid #c75749; background: #9f302b;
-      color: white; padding: 15px 34px; cursor: pointer;
-      font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
+      padding: 15px 34px;
+      border: 1px solid #c75749;
+      background: #9f302b;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       transition: .2s;
     }
-    button:hover { background: #c3483d; transform: translateY(-2px); }
-    .menu-note { color: #85888d; font-size: 11px; letter-spacing: 1px; margin-top: 20px; }
+
+    button:hover {
+      background: #c3483d;
+      transform: translateY(-2px);
+    }
+
+    .menu-note {
+      margin-top: 20px;
+      color: #85888d;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
     #hud {
-      display: none; position: fixed; z-index: 2; left: 20px; top: 18px;
-      padding: 12px 15px; min-width: 210px;
-      color: #eee; background: #080a0dcc; border: 1px solid #ffffff30;
-      border-radius: 5px; line-height: 1.7; pointer-events: none;
+      display: none;
+      position: fixed;
+      z-index: 2;
+      top: 18px;
+      left: 20px;
+      min-width: 210px;
+      padding: 12px 15px;
+      border: 1px solid #ffffff30;
+      border-radius: 5px;
+      background: #080a0dcc;
+      line-height: 1.7;
+      pointer-events: none;
     }
-    .bar { width: 180px; height: 8px; background: #333; overflow: hidden; }
-    #health { height: 100%; width: 100%; background: #bd403b; transition: width .2s; }
+
+    .bar {
+      width: 180px;
+      height: 8px;
+      overflow: hidden;
+      background: #333;
+    }
+
+    #health {
+      width: 100%;
+      height: 100%;
+      background: #bd403b;
+      transition: width .2s;
+    }
+
     #help {
-      display: none; position: fixed; z-index: 2; left: 50%; bottom: 18px;
-      transform: translateX(-50%); padding: 9px 14px;
-      color: #ccc; background: #080a0dcc; border-radius: 4px;
-      font-size: 12px; pointer-events: none; white-space: nowrap;
+      display: none;
+      position: fixed;
+      z-index: 2;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 9px 14px;
+      border-radius: 4px;
+      background: #080a0dcc;
+      color: #ccc;
+      font-size: 12px;
+      white-space: nowrap;
+      pointer-events: none;
     }
+
     #pause {
-      display: none; position: fixed; inset: 0; z-index: 6;
-      place-items: center; background: #050608cc; text-align: center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 6;
+      place-items: center;
+      background: #050608cc;
+      text-align: center;
     }
-    #pause h2 { font-size: 42px; letter-spacing: 6px; }
-    #pause p { color: #aaa; margin-bottom: 22px; }
+
+    #pause h2 {
+      font-size: 42px;
+      letter-spacing: 6px;
+    }
+
+    #pause p {
+      margin-bottom: 22px;
+      color: #aaa;
+    }
+
     @media (max-width: 650px) {
       .menu-content { margin: 0; }
       #help { font-size: 10px; }
     }
   </style>
 </head>
+
 <body>
   <div id="menu" class="screen">
     <div class="menu-content">
@@ -85,24 +186,28 @@
     <div class="bar"><div id="health"></div></div>
     Monsters defeated: <span id="score">0</span>
   </div>
+
   <div id="help">WASD move · Mouse look · Click / Space attack · Shift run · Esc pause</div>
+
   <div id="pause">
     <div>
       <div class="eyebrow">The grounds await</div>
-      <h2>PAUSED</h2>
-      <p>Press Escape to return to the game.</p>
+      <h2 id="pauseTitle">PAUSED</h2>
+      <p id="pauseText">Press Escape to return to the game.</p>
       <button id="resume">Resume</button>
     </div>
   </div>
 
   <script type="module">
-    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+    import * as THREE from "three";
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x090d13);
     scene.fog = new THREE.FogExp2(0x090d13, 0.018);
 
     const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 150);
+
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(innerWidth, innerHeight);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -114,7 +219,7 @@
 
     scene.add(new THREE.HemisphereLight(0x9da9bd, 0x171512, 1.8));
 
-    const moon = new THREE.DirectionalLight(0xb9c9df, 3.0);
+    const moon = new THREE.DirectionalLight(0xb9c9df, 3);
     moon.position.set(-9, 16, 8);
     moon.castShadow = true;
     moon.shadow.mapSize.set(2048, 2048);
@@ -124,9 +229,9 @@
     moon.shadow.camera.bottom = -30;
     scene.add(moon);
 
-    const warmLight = new THREE.PointLight(0xd65c3f, 16, 18, 2);
-    warmLight.position.set(3, 3, -7);
-    scene.add(warmLight);
+    const lanternLight = new THREE.PointLight(0xd65c3f, 16, 18, 2);
+    lanternLight.position.set(3, 3, -7);
+    scene.add(lanternLight);
 
     const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(100, 100),
@@ -140,29 +245,37 @@
     grid.position.y = 0.015;
     scene.add(grid);
 
-    // Stones and dark training-ground trees
+    // Dark trees and stones around the training ground.
     const stoneMat = new THREE.MeshStandardMaterial({ color: 0x414445, roughness: 1 });
     const trunkMat = new THREE.MeshStandardMaterial({ color: 0x211d1b, roughness: 1 });
     const leafMat = new THREE.MeshStandardMaterial({ color: 0x151e1b, roughness: 1 });
 
     for (let i = 0; i < 28; i++) {
-      const a = i / 28 * Math.PI * 2;
-      const r = 27 + Math.random() * 7;
-      const x = Math.cos(a) * r, z = Math.sin(a) * r;
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.18, .3, 5, 7), trunkMat);
+      const angle = i / 28 * Math.PI * 2;
+      const radius = 27 + Math.random() * 7;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+
+      const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(.18, .3, 5, 7),
+        trunkMat
+      );
       trunk.position.set(x, 2.5, z);
-      trunk.rotation.z = (Math.random() - .5) * .2;
       trunk.castShadow = true;
       scene.add(trunk);
 
-      const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(2.1 + Math.random(), 1), leafMat);
+      const crown = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(2.1 + Math.random(), 1),
+        leafMat
+      );
       crown.position.set(x, 5.2, z);
       crown.scale.set(1.1, .75, 1);
       crown.castShadow = true;
       scene.add(crown);
 
       const rock = new THREE.Mesh(
-        new THREE.DodecahedronGeometry(.45 + Math.random() * .7, 0), stoneMat
+        new THREE.DodecahedronGeometry(.45 + Math.random() * .7, 0),
+        stoneMat
       );
       rock.position.set(x * .82, .25, z * .82);
       rock.scale.y = .5;
@@ -171,83 +284,155 @@
       scene.add(rock);
     }
 
-    function material(color, roughness = .8, metalness = 0) {
+    function makeMaterial(color, roughness = .8, metalness = 0) {
       return new THREE.MeshStandardMaterial({ color, roughness, metalness });
     }
 
-    // A layered, articulated character made from primitive meshes.
-    function makeCharacter(isMonster = false) {
+    // Procedural fallback character, used if models/ninja.glb is not present.
+    function makeFallbackCharacter(monster = false) {
       const root = new THREE.Group();
-      const cloth = material(isMonster ? 0x344132 : 0x101317, .92);
-      const darkCloth = material(isMonster ? 0x20291f : 0x080a0c, .95);
-      const skin = material(isMonster ? 0x71815a : 0xb58e73, .9);
-      const wrap = material(isMonster ? 0x4a302b : 0x292522, .9);
-      const red = material(0x8e2927, .78);
+      const cloth = makeMaterial(monster ? 0x344132 : 0x101317, .92);
+      const dark = makeMaterial(monster ? 0x20291f : 0x080a0c, .95);
+      const skin = makeMaterial(monster ? 0x71815a : 0xb58e73, .9);
+      const wrap = makeMaterial(monster ? 0x4a302b : 0x292522, .9);
+      const red = makeMaterial(0x8e2927, .78);
 
-      function mesh(parent, geo, mat, pos, scale) {
-        const m = new THREE.Mesh(geo, mat);
-        m.position.set(...pos);
-        if (scale) m.scale.set(...scale);
-        m.castShadow = true;
-        m.receiveShadow = true;
-        parent.add(m);
-        return m;
+      function part(geo, mat, pos, scale) {
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(...pos);
+        if (scale) mesh.scale.set(...scale);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        root.add(mesh);
+        return mesh;
       }
 
-      // Legs
-      const legs = [];
       for (const side of [-1, 1]) {
-        const leg = new THREE.Group();
-        leg.position.set(side * .19, .75, 0);
-        root.add(leg);
-        mesh(leg, new THREE.CapsuleGeometry(.13, .52, 4, 8), cloth, [0, -.25, 0]);
-        mesh(leg, new THREE.BoxGeometry(.28, .14, .42), darkCloth, [0, -.58, -.07]);
-        legs.push(leg);
+        const leg = part(new THREE.CapsuleGeometry(.13, .52, 4, 8), cloth,
+          [side * .19, .49, 0]);
+        leg.name = side < 0 ? "leftLeg" : "rightLeg";
+
+        part(new THREE.BoxGeometry(.28, .14, .42), dark,
+          [side * .19, .17, -.07]);
       }
 
-      // Torso and layered waist cloth
-      mesh(root, new THREE.CapsuleGeometry(.34, .52, 5, 10), cloth, [0, 1.28, 0]);
-      mesh(root, new THREE.BoxGeometry(.66, .2, .45), darkCloth, [0, .94, 0]);
-      mesh(root, new THREE.BoxGeometry(.68, .1, .48), wrap, [0, 1.02, .02]);
+      part(new THREE.CapsuleGeometry(.34, .52, 5, 10), cloth, [0, 1.28, 0]);
+      part(new THREE.BoxGeometry(.66, .2, .45), dark, [0, .94, 0]);
+      part(new THREE.BoxGeometry(.68, .1, .48), wrap, [0, 1.02, .02]);
 
-      // Chest straps
-      const strap = mesh(root, new THREE.BoxGeometry(.1, .74, .46), wrap, [.03, 1.36, .02]);
+      const strap = part(new THREE.BoxGeometry(.1, .74, .46), wrap, [.03, 1.36, .02]);
       strap.rotation.z = -.36;
 
-      // Head, hood, face covering
-      mesh(root, new THREE.SphereGeometry(.255, 20, 16), skin, [0, 1.98, 0]);
-      mesh(root, new THREE.SphereGeometry(.29, 20, 12), darkCloth, [0, 2.04, -.045], [1.05, .75, 1]);
-      mesh(root, new THREE.BoxGeometry(.4, .16, .28), darkCloth, [0, 1.83, .12]);
-      mesh(root, new THREE.BoxGeometry(.25, .055, .08), red, [0, 1.96, .245]);
+      part(new THREE.SphereGeometry(.255, 20, 16), skin, [0, 1.98, 0]);
+      part(new THREE.SphereGeometry(.29, 20, 12), dark, [0, 2.04, -.045], [1.05, .75, 1]);
+      part(new THREE.BoxGeometry(.4, .16, .28), dark, [0, 1.83, .12]);
+      part(new THREE.BoxGeometry(.25, .055, .08), red, [0, 1.96, .245]);
 
-      // Arms, shoulder wraps
-      const arms = [];
       for (const side of [-1, 1]) {
-        const arm = new THREE.Group();
-        arm.position.set(side * .4, 1.55, 0);
-        root.add(arm);
-        mesh(arm, new THREE.SphereGeometry(.19, 12, 10), darkCloth, [0, -.05, 0], [1.05, .85, 1]);
-        const upper = mesh(arm, new THREE.CapsuleGeometry(.12, .38, 4, 8), cloth, [side * .08, -.28, 0]);
-        upper.rotation.z = side * -.15;
-        const forearm = mesh(arm, new THREE.CapsuleGeometry(.105, .35, 4, 8), darkCloth, [side * .08, -.62, .035]);
-        forearm.rotation.z = side * -.1;
-        mesh(arm, new THREE.SphereGeometry(.105, 12, 10), skin, [side * .08, -.84, .07]);
-        arms.push(arm);
+        part(new THREE.SphereGeometry(.19, 12, 10), dark, [side * .4, 1.5, 0]);
+        const arm = part(new THREE.CapsuleGeometry(.12, .55, 4, 8), cloth,
+          [side * .49, 1.12, 0]);
+        arm.rotation.z = side * -.1;
       }
 
-      return { root, legs, arms };
+      return root;
     }
 
-    const ninja = makeCharacter();
-    const player = ninja.root;
+    const player = new THREE.Group();
     scene.add(player);
 
-    // Katana with a tapered curved-looking blade, guard, and wrapped grip.
+    let playerVisual = makeFallbackCharacter();
+    player.add(playerVisual);
+
+    let ninjaMixer = null;
+    let ninjaActions = {};
+    let currentAction = null;
+
+    function chooseAnimation(partialName) {
+      const name = Object.keys(ninjaActions).find(key => key.includes(partialName));
+      const next = name ? ninjaActions[name] : null;
+      if (!next || next === currentAction) return;
+
+      next.reset().fadeIn(.2).play();
+      if (currentAction) currentAction.fadeOut(.2);
+      currentAction = next;
+    }
+
+    // Optional custom rigged model. The procedural character remains if loading fails.
+    const loader = new GLTFLoader();
+    loader.load(
+      "models/ninja.glb",
+      (gltf) => {
+        const model = gltf.scene;
+        const originalBounds = new THREE.Box3().setFromObject(model);
+        const originalSize = originalBounds.getSize(new THREE.Vector3());
+
+        if (originalSize.y > 0) {
+          model.scale.setScalar(2 / originalSize.y);
+        }
+
+        const scaledBounds = new THREE.Box3().setFromObject(model);
+        model.position.y -= scaledBounds.min.y;
+
+        // If your model faces backward, change Math.PI to 0.
+        model.rotation.y = Math.PI;
+
+        model.traverse((part) => {
+          if (part.isMesh) {
+            part.castShadow = true;
+            part.receiveShadow = true;
+          }
+        });
+
+        player.remove(playerVisual);
+        playerVisual = model;
+        player.add(model);
+
+        if (gltf.animations.length) {
+          ninjaMixer = new THREE.AnimationMixer(model);
+
+          for (const clip of gltf.animations) {
+            ninjaActions[clip.name.toLowerCase()] = ninjaMixer.clipAction(clip);
+          }
+
+          chooseAnimation("idle");
+          if (!currentAction) {
+            const first = Object.values(ninjaActions)[0];
+            if (first) {
+              first.play();
+              currentAction = first;
+            }
+          }
+        }
+
+        // Try to attach the katana to a likely right-hand bone.
+        const hand = model.getObjectByName("RightHand")
+          || model.getObjectByName("mixamorigRightHand")
+          || model.getObjectByName("hand_r");
+
+        if (hand) {
+          swordPivot.removeFromParent();
+          hand.add(swordPivot);
+          swordPivot.position.set(0, 0, 0);
+          swordPivot.rotation.set(0, 0, 0);
+        }
+
+        console.log("Ninja model loaded. Model bones:");
+        model.traverse(part => {
+          if (part.isBone) console.log(part.name);
+        });
+      },
+      undefined,
+      (error) => {
+        console.warn("Optional models/ninja.glb was not loaded; using the built-in character.", error);
+      }
+    );
+
+    // Katana: metallic blade, guard, grip, and grip bands.
     const swordPivot = new THREE.Group();
     swordPivot.position.set(.53, 1.43, .12);
     player.add(swordPivot);
 
-    const bladeMat = material(0xcbd4dc, .18, .9);
     const bladeShape = new THREE.Shape();
     bladeShape.moveTo(-.06, 0);
     bladeShape.lineTo(.045, 0);
@@ -256,17 +441,23 @@
     bladeShape.lineTo(-.025, .18);
     bladeShape.close();
 
-    const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
-      depth: .035, bevelEnabled: true, bevelThickness: .012, bevelSize: .008, bevelSegments: 2
-    });
-    const swordBlade = new THREE.Mesh(bladeGeo, bladeMat);
-    swordBlade.position.z = -.018;
-    swordBlade.castShadow = true;
-    swordPivot.add(swordBlade);
+    const blade = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(bladeShape, {
+        depth: .035,
+        bevelEnabled: true,
+        bevelThickness: .012,
+        bevelSize: .008,
+        bevelSegments: 2
+      }),
+      makeMaterial(0xcbd4dc, .18, .9)
+    );
+    blade.position.z = -.018;
+    blade.castShadow = true;
+    swordPivot.add(blade);
 
     const guard = new THREE.Mesh(
       new THREE.TorusGeometry(.15, .025, 6, 16),
-      material(0x88724b, .4, .75)
+      makeMaterial(0x88724b, .4, .75)
     );
     guard.position.y = .04;
     guard.rotation.x = Math.PI / 2;
@@ -274,16 +465,15 @@
 
     const grip = new THREE.Mesh(
       new THREE.CylinderGeometry(.045, .05, .42, 10),
-      material(0x211715, .85)
+      makeMaterial(0x211715, .85)
     );
     grip.position.y = -.2;
     swordPivot.add(grip);
 
-    // Decorative grip wrap bands
     for (let i = 0; i < 5; i++) {
       const band = new THREE.Mesh(
         new THREE.TorusGeometry(.05, .009, 5, 10),
-        material(0x8a7770, .8)
+        makeMaterial(0x8a7770, .8)
       );
       band.position.y = -.34 + i * .07;
       band.rotation.x = Math.PI / 2;
@@ -292,87 +482,131 @@
     swordPivot.rotation.z = -.85;
 
     const monsters = [];
+
     function spawnMonster(x, z) {
-      const character = makeCharacter(true);
-      character.root.position.set(x, 0, z);
-      character.root.userData.hp = 2;
-      character.root.userData.flash = 0;
-      scene.add(character.root);
-      monsters.push(character.root);
+      const monster = makeFallbackCharacter(true);
+      monster.position.set(x, 0, z);
+      monster.userData.hp = 2;
+      scene.add(monster);
+      monsters.push(monster);
     }
 
     for (let i = 0; i < 6; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 9 + Math.random() * 10;
-      spawnMonster(Math.cos(a) * r, Math.sin(a) * r);
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 9 + Math.random() * 10;
+      spawnMonster(Math.cos(angle) * radius, Math.sin(angle) * radius);
     }
 
-    let yaw = 0, pitch = -.08;
-    let attackTimer = 0, cooldown = 0, invulnerable = 0;
-    let health = 100, score = 0, running = false, dead = false;
+    let yaw = 0;
+    let pitch = -.08;
+    let attackTimer = 0;
+    let cooldown = 0;
+    let invulnerable = 0;
+    let health = 100;
+    let score = 0;
+    let running = false;
+    let paused = false;
+    let dead = false;
+
     const keys = {};
     const clock = new THREE.Clock();
-    const cameraTarget = new THREE.Vector3();
-    const cameraDesired = new THREE.Vector3();
-    const menu = document.querySelector("#menu");
-    const pause = document.querySelector("#pause");
 
-    function beginGame() {
+    const menu = document.querySelector("#menu");
+    const pauseScreen = document.querySelector("#pause");
+
+    function startGame() {
       running = true;
+      paused = false;
       menu.style.display = "none";
+      pauseScreen.style.display = "none";
       document.querySelector("#hud").style.display = "block";
       document.querySelector("#help").style.display = "block";
       renderer.domElement.requestPointerLock?.();
     }
 
-    document.querySelector("#play").addEventListener("click", beginGame);
+    document.querySelector("#play").addEventListener("click", startGame);
+
     document.querySelector("#resume").addEventListener("click", () => {
-      pause.style.display = "none";
+      paused = false;
+      pauseScreen.style.display = "none";
       renderer.domElement.requestPointerLock?.();
     });
 
     document.addEventListener("pointerlockchange", () => {
       if (!running || dead) return;
-      pause.style.display = document.pointerLockElement === renderer.domElement ? "none" : "grid";
-    });
 
-    document.addEventListener("mousemove", e => {
-      if (document.pointerLockElement !== renderer.domElement) return;
-      yaw -= e.movementX * .0022;
-      pitch = THREE.MathUtils.clamp(pitch - e.movementY * .0015, -.38, .22);
-    });
-
-    addEventListener("keydown", e => {
-      keys[e.code] = true;
-      if (e.code === "Space") { e.preventDefault(); attack(); }
-      if (e.code === "Escape" && running && !dead) {
-        pause.style.display = "grid";
+      if (document.pointerLockElement === renderer.domElement) {
+        paused = false;
+        pauseScreen.style.display = "none";
+      } else {
+        paused = true;
+        pauseScreen.style.display = "grid";
       }
     });
-    addEventListener("keyup", e => keys[e.code] = false);
-    addEventListener("mousedown", e => {
-      if (e.button === 0 && running && document.pointerLockElement === renderer.domElement) attack();
+
+    document.addEventListener("mousemove", (event) => {
+      if (document.pointerLockElement !== renderer.domElement) return;
+      yaw -= event.movementX * .0022;
+      pitch = THREE.MathUtils.clamp(
+        pitch - event.movementY * .0015,
+        -.38,
+        .22
+      );
+    });
+
+    addEventListener("keydown", (event) => {
+      keys[event.code] = true;
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        attack();
+      }
+
+      if (event.code === "Escape" && running && !dead) {
+        paused = true;
+        pauseScreen.style.display = "grid";
+      }
+    });
+
+    addEventListener("keyup", (event) => {
+      keys[event.code] = false;
+    });
+
+    addEventListener("mousedown", (event) => {
+      if (
+        event.button === 0 &&
+        running &&
+        !paused &&
+        document.pointerLockElement === renderer.domElement
+      ) {
+        attack();
+      }
     });
 
     function attack() {
-      if (!running || cooldown > 0 || dead) return;
+      if (!running || paused || cooldown > 0 || dead) return;
+
       attackTimer = .52;
       cooldown = .62;
 
-      const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
-      for (const m of monsters) {
-        if (m.userData.hp <= 0) continue;
-        const dx = m.position.x - player.position.x;
-        const dz = m.position.z - player.position.z;
-        const d = Math.hypot(dx, dz);
-        const facing = (dx * fx + dz * fz) / Math.max(d, .001);
-        if (d < 3.1 && facing > .15) {
-          m.userData.hp--;
-          m.userData.flash = .16;
-          m.position.x += fx * .65;
-          m.position.z += fz * .65;
-          if (m.userData.hp <= 0) {
-            scene.remove(m);
+      const facingX = -Math.sin(yaw);
+      const facingZ = -Math.cos(yaw);
+
+      for (const monster of monsters) {
+        if (monster.userData.hp <= 0) continue;
+
+        const dx = monster.position.x - player.position.x;
+        const dz = monster.position.z - player.position.z;
+        const distance = Math.hypot(dx, dz);
+        const facing = (dx * facingX + dz * facingZ) / Math.max(distance, .001);
+
+        if (distance < 3.1 && facing > .15) {
+          monster.userData.hp--;
+          monster.position.x += facingX * .65;
+          monster.position.z += facingZ * .65;
+
+          if (monster.userData.hp <= 0) {
+            scene.remove(monster);
             score++;
             document.querySelector("#score").textContent = score;
           }
@@ -381,15 +615,15 @@
     }
 
     function update(dt, elapsed) {
-      if (!running || dead) {
-        // Slow cinematic idle motion behind the title screen
-        if (!running) {
-          player.rotation.y = Math.sin(elapsed * .2) * .12;
-          camera.position.set(Math.sin(elapsed * .12) * 8, 3.1, 8);
-          camera.lookAt(0, 1.2, 0);
-        }
+      if (!running) {
+        // Slow idle camera movement behind the main menu.
+        player.rotation.y = Math.sin(elapsed * .2) * .12;
+        camera.position.set(Math.sin(elapsed * .12) * 8, 3.1, 8);
+        camera.lookAt(0, 1.2, 0);
         return;
       }
+
+      if (paused || dead) return;
 
       cooldown = Math.max(0, cooldown - dt);
       invulnerable = Math.max(0, invulnerable - dt);
@@ -405,11 +639,13 @@
 
       const moving = move.lengthSq() > 0;
       const sprinting = keys.ShiftLeft || keys.ShiftRight;
+
       if (moving) {
         move.normalize();
         player.position.addScaledVector(move, (sprinting ? 7 : 4.5) * dt);
-        const wantedYaw = Math.atan2(-move.x, -move.z);
-        let difference = wantedYaw - player.rotation.y;
+
+        const desiredYaw = Math.atan2(-move.x, -move.z);
+        let difference = desiredYaw - player.rotation.y;
         difference = Math.atan2(Math.sin(difference), Math.cos(difference));
         player.rotation.y += difference * (1 - Math.exp(-12 * dt));
       }
@@ -417,14 +653,18 @@
       player.position.x = THREE.MathUtils.clamp(player.position.x, -35, 35);
       player.position.z = THREE.MathUtils.clamp(player.position.z, -35, 35);
 
-      // Subtle alternating gait
-      const gait = moving ? Math.sin(elapsed * (sprinting ? 15 : 10)) : 0;
-      ninja.legs[0].rotation.x = gait * .35;
-      ninja.legs[1].rotation.x = -gait * .35;
-      ninja.arms[0].rotation.x = -gait * .15;
-      ninja.arms[1].rotation.x = gait * .15;
+      if (ninjaMixer) {
+        ninjaMixer.update(dt);
 
-      // Wind-up, slash, and recovery
+        if (moving) {
+          chooseAnimation(sprinting ? "run" : "walk");
+          if (!currentAction) chooseAnimation("idle");
+        } else {
+          chooseAnimation("idle");
+        }
+      }
+
+      // Sword wind-up, slash, and recovery.
       if (attackTimer > 0) {
         attackTimer -= dt;
         const t = 1 - attackTimer / .52;
@@ -438,43 +678,53 @@
         swordPivot.rotation.y = THREE.MathUtils.damp(swordPivot.rotation.y, 0, 9, dt);
       }
 
-      for (const m of monsters) {
-        if (m.userData.hp <= 0) continue;
-        const dx = player.position.x - m.position.x;
-        const dz = player.position.z - m.position.z;
-        const d = Math.hypot(dx, dz);
+      for (const monster of monsters) {
+        if (monster.userData.hp <= 0) continue;
 
-        if (d > 1.3) {
-          m.position.x += dx / d * 1.25 * dt;
-          m.position.z += dz / d * 1.25 * dt;
-          m.rotation.y = Math.atan2(-dx, -dz);
+        const dx = player.position.x - monster.position.x;
+        const dz = player.position.z - monster.position.z;
+        const distance = Math.hypot(dx, dz);
+
+        if (distance > 1.3) {
+          monster.position.x += dx / distance * 1.25 * dt;
+          monster.position.z += dz / distance * 1.25 * dt;
+          monster.rotation.y = Math.atan2(-dx, -dz);
         } else if (invulnerable <= 0) {
           health = Math.max(0, health - 10);
           invulnerable = .8;
           document.querySelector("#health").style.width = health + "%";
+
           if (health <= 0) {
             dead = true;
-            pause.style.display = "grid";
-            pause.querySelector("h2").textContent = "DEFEATED";
-            pause.querySelector("p").textContent = "Refresh the page to try again.";
-            pause.querySelector("button").style.display = "none";
+            paused = true;
+            document.querySelector("#pauseTitle").textContent = "DEFEATED";
+            document.querySelector("#pauseText").textContent = "Refresh the page to try again.";
+            document.querySelector("#resume").style.display = "none";
+            pauseScreen.style.display = "grid";
             document.exitPointerLock?.();
           }
         }
       }
 
-      // Smooth shoulder-follow camera, oriented by mouse aim
-      cameraTarget.set(player.position.x, player.position.y + 1.55, player.position.z);
-      const camBack = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
-      cameraDesired.set(
-        player.position.x + camBack.x * 5.2 + Math.cos(yaw) * .65,
-        player.position.y + 2.0 - pitch * 2,
-        player.position.z + camBack.z * 5.2 + Math.sin(yaw) * .65
+      // Smooth third-person shoulder camera.
+      const target = new THREE.Vector3(
+        player.position.x,
+        player.position.y + 1.55,
+        player.position.z
       );
-      camera.position.lerp(cameraDesired, 1 - Math.exp(-6.5 * dt));
-      const look = cameraTarget.clone().add(forward.clone().multiplyScalar(4));
-      look.y += pitch * 3;
-      camera.lookAt(look);
+
+      const cameraBack = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
+      const desiredCamera = new THREE.Vector3(
+        player.position.x + cameraBack.x * 5.2 + Math.cos(yaw) * .65,
+        player.position.y + 2 - pitch * 2,
+        player.position.z + cameraBack.z * 5.2 + Math.sin(yaw) * .65
+      );
+
+      camera.position.lerp(desiredCamera, 1 - Math.exp(-6.5 * dt));
+
+      const lookAt = target.clone().add(forward.clone().multiplyScalar(4));
+      lookAt.y += pitch * 3;
+      camera.lookAt(lookAt);
     }
 
     function animate() {
@@ -484,7 +734,6 @@
       renderer.render(scene, camera);
     }
 
-    // Initial menu camera view
     camera.position.set(0, 3, 8);
     camera.lookAt(0, 1.2, 0);
     animate();
