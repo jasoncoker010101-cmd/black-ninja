@@ -180,7 +180,8 @@
     <strong>BLACK NINJA</strong><br>
     Health
     <div class="bar"><div id="health"></div></div>
-    Monsters defeated: <span id="score">0</span>
+    Monsters defeated: <span id="score">0</span><br>
+    Wave: <span id="wave">1</span>
   </div>
 
   <div id="help">WASD move · Mouse look · Click / Space attack · Shift run · Esc pause</div>
@@ -191,6 +192,7 @@
       <h2 id="pauseTitle">PAUSED</h2>
       <p id="pauseText">Press Escape to return to the game.</p>
       <button id="resume" type="button">Resume</button>
+      <button id="restart" type="button" style="display:none;margin-left:8px">Play again</button>
     </div>
   </div>
 
@@ -400,6 +402,8 @@
     let invulnerable = 0;
     let health = 100;
     let score = 0;
+    let wave = 1;
+    let waveDelay = -1;
     let paused = false;
     let dead = false;
 
@@ -419,6 +423,8 @@
     }
 
     document.getElementById("play").addEventListener("click", requestMouseLock);
+
+    document.getElementById("restart").addEventListener("click", () => location.reload());
 
     document.getElementById("resume").addEventListener("click", () => {
       paused = false;
@@ -494,6 +500,20 @@
       }
     }
 
+    function startNextWave() {
+      wave++;
+      document.getElementById("wave").textContent = wave;
+      const count = Math.min(4 + wave * 2, 18);
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 12 + Math.random() * 9;
+        spawnMonster(
+          THREE.MathUtils.clamp(player.position.x + Math.cos(angle) * radius, -32, 32),
+          THREE.MathUtils.clamp(player.position.z + Math.sin(angle) * radius, -32, 32)
+        );
+      }
+    }
+
     function update(dt, elapsed) {
       // Cinematic menu view before the player starts
       if (!window.gameStarted) {
@@ -506,6 +526,13 @@
       if (paused || dead) return;
 
       cooldown = Math.max(0, cooldown - dt);
+      if (waveDelay >= 0) {
+        waveDelay -= dt;
+        if (waveDelay <= 0) {
+          waveDelay = -1;
+          startNextWave();
+        }
+      }
       invulnerable = Math.max(0, invulnerable - dt);
 
       const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
@@ -563,11 +590,16 @@
             paused = true;
             document.getElementById("pauseTitle").textContent = "DEFEATED";
             document.getElementById("pauseText").textContent =
-              "Refresh the page to try again.";
+              `You survived ${wave} wave${wave === 1 ? "" : "s"} and defeated ${score} monsters.`;
             document.getElementById("resume").style.display = "none";
+            document.getElementById("restart").style.display = "inline-block";
             pauseScreen.style.display = "grid";
           }
         }
+      }
+
+      if (waveDelay < 0 && monsters.every(monster => monster.userData.hp <= 0)) {
+        waveDelay = 2.2;
       }
 
       const target = new THREE.Vector3(
